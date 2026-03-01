@@ -1,6 +1,6 @@
 # llamma_cpp_dist
 
-Docker image for distributed [llama.cpp](https://github.com/ggml-org/llama.cpp) inference over RPC, compiled with CUDA support. Published to Docker Hub as [`avirtuos/llamma_cpp_dist`](https://hub.docker.com/r/avirtuos/llamma_cpp_dist).
+Docker image for distributed [llama.cpp](https://github.com/ggml-org/llama.cpp) inference over RPC, compiled with CUDA support. Published to Docker Hub as [`avirtuos/llama_cpp_dist`](https://hub.docker.com/r/avirtuos/llama_cpp_dist).
 
 ## What This Image Does
 
@@ -24,7 +24,7 @@ The image ships two binaries selected by the `MODE` environment variable:
 ## Quick Start
 
 ```bash
-docker pull avirtuos/llamma_cpp_dist:latest
+docker pull avirtuos/llama_cpp_dist:latest
 ```
 
 **Run as a server** (serves OpenAI-compatible API on port 8080):
@@ -34,7 +34,7 @@ docker run --gpus all --network host \
   -e MODE=server \
   -e HF_TOKEN=your_token_here \
   -v /mnt/hf-cache:/root/.cache/huggingface \
-  avirtuos/llamma_cpp_dist:latest \
+  avirtuos/llama_cpp_dist:latest \
   -hf ggml-org/gpt-oss-120b-GGUF \
   --rpc 192.168.1.2:50052 \
   --ctx-size 0 \
@@ -48,7 +48,7 @@ docker run --gpus all --network host \
 docker run --gpus all --network host \
   -e MODE=backend \
   -e PORT=50052 \
-  avirtuos/llamma_cpp_dist:latest
+  avirtuos/llama_cpp_dist:latest
 ```
 
 ## Environment Variables
