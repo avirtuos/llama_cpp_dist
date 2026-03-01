@@ -89,7 +89,13 @@ To enable automatic publishing to Docker Hub, configure the following secrets in
 2. Click your avatar → **Account Settings**
 3. Go to **Security** → **Personal access tokens**
 4. Click **Generate new token**, give it a description (e.g. `github-actions`), set scope to **Read & Write**, and click **Generate**
-5. Copy the token immediately (it won't be shown again) and add it as the `DOCKERHUB_TOKEN` secret in GitHub
+5. Copy the token immediately (it won't be shown again)
+
+**Adding the secrets to GitHub:**
+1. Go to your repository on GitHub
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add `DOCKERHUB_USERNAME` (your Docker Hub username)
+4. Click **New repository secret** again and add `DOCKERHUB_TOKEN` (the token from step 5 above)
 
 ## Image Tags
 
