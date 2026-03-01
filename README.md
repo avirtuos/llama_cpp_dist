@@ -14,42 +14,67 @@ The image ships two binaries selected by the `MODE` environment variable:
 **RPC architecture** — a single `llama-server` instance connects to one or more `rpc-server` instances over TCP, distributing model layers across all GPUs so models that exceed a single GPU's VRAM can still be loaded.
 
 ```
-  Client  ──►  llama-server (server node, port 8080)
-                    │
-                    │ RPC over TCP port 50052
-                    │
-               rpc-server (backend node, port 50052)
+  Open WebUI  ──►  spark01 (llama-server, port 8080)
+                        │
+                        │ RPC over TCP port 50052
+                        │
+                   spark02 (rpc-server, port 50052)
 ```
 
 ## Quick Start
+
+Pull the image on **both nodes**:
 
 ```bash
 docker pull avirtuos/llama_cpp_dist:latest
 ```
 
-**Run as a server** (serves OpenAI-compatible API on port 8080):
+**Step 1 — Deploy the RPC backend stack on spark02 (deploy first)**
 
-```bash
-docker run --gpus all --network host \
-  -e MODE=server \
-  -e HF_TOKEN=your_token_here \
-  -v /mnt/hf-cache:/root/.cache/huggingface \
-  avirtuos/llama_cpp_dist:latest \
-  -hf ggml-org/gpt-oss-120b-GGUF \
-  --rpc 192.168.1.2:50052 \
-  --ctx-size 0 \
-  --host 0.0.0.0 \
-  --port 8080
+From the Portainer UI (`https://10.0.26.61:9443`), switch to the **spark02** environment, go to **Stacks → Add Stack**, name it `llama-rpc-backend`, and paste:
+
+```yaml
+services:
+  rpc-backend:
+    image: avirtuos/llama_cpp_dist:latest
+    network_mode: host
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - MODE=backend
+      - PORT=50052
+    restart: unless-stopped
 ```
 
-**Run as a backend** (RPC backend on port 50052):
+**Step 2 — Deploy the llama-server stack on spark01 (deploy second)**
 
-```bash
-docker run --gpus all --network host \
-  -e MODE=backend \
-  -e PORT=50052 \
-  avirtuos/llama_cpp_dist:latest
+Switch to the **spark01** environment, go to **Stacks → Add Stack**, name it `llama-gpt-oss`, and paste:
+
+```yaml
+services:
+  llama-server:
+    image: avirtuos/llama_cpp_dist:latest
+    network_mode: host
+    runtime: nvidia
+    volumes:
+      - /mnt/hf-cache:/root/.cache/huggingface
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - MODE=server
+      - HF_TOKEN=your_token_here
+    command: >
+      -hf ggml-org/gpt-oss-120b-GGUF
+      --rpc 10.0.22.253:50052
+      --ctx-size 0
+      --jinja
+      -ub 2048
+      -b 2048
+      --host 0.0.0.0
+      --port 8080
+    restart: unless-stopped
 ```
+
+> **Note on HF_TOKEN**: `ggml-org/gpt-oss-120b-GGUF` is a gated model. Visit https://huggingface.co/ggml-org/gpt-oss-120b-GGUF, accept the license, then generate a token at https://huggingface.co/settings/tokens and set it above.
 
 ## Environment Variables
 
