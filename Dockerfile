@@ -12,6 +12,9 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS builder
 
 ARG CMAKE_CUDA_ARCHITECTURES
 
+# Explicitly ensure nvcc is in PATH — ARG reset can drop ENV from the base image
+ENV PATH=/usr/local/cuda/bin:${PATH}
+
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -24,6 +27,7 @@ WORKDIR /build
 RUN git clone --depth=1 https://github.com/ggml-org/llama.cpp .
 
 RUN cmake -B build \
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
     -DGGML_CUDA=ON \
     -DGGML_RPC=ON \
     -DGGML_BACKEND_DL=ON \
