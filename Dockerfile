@@ -1,11 +1,11 @@
 ARG UBUNTU_VERSION=22.04
-ARG CUDA_VERSION=12.6.3
+ARG CUDA_VERSION=12.8.0
 ARG BASE_CUDA_DEV_CONTAINER=nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION}
 ARG BASE_CUDA_RUN_CONTAINER=nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu${UBUNTU_VERSION}
 
-# Default covers Ampere (A100=80, RTX3090=86), Ada (RTX4090=89), Hopper (H100=90), Blackwell (GB10=100)
-# Pass --build-arg CMAKE_CUDA_ARCHITECTURES=native for an optimized single-GPU local build
-ARG CMAKE_CUDA_ARCHITECTURES=80;86;89;90;100
+# Default targets the DGX Spark GB10 (Blackwell sm_100).
+# Pass --build-arg CMAKE_CUDA_ARCHITECTURES=native for an optimized single-GPU local build.
+ARG CMAKE_CUDA_ARCHITECTURES=100
 
 # ── Build stage ──────────────────────────────────────────────────────────────
 FROM ${BASE_CUDA_DEV_CONTAINER} AS builder
