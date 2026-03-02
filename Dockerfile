@@ -14,10 +14,6 @@ ARG CMAKE_CUDA_ARCHITECTURES
 
 # Explicitly ensure nvcc is in PATH — ARG reset can drop ENV from the base image
 ENV PATH=/usr/local/cuda/bin:${PATH}
-# Expose the CUDA driver stub so the linker can resolve Driver API symbols
-# (cuGetErrorString etc.) at build time. The real libcuda.so.1 comes from
-# the NVIDIA driver at runtime via the container runtime.
-ENV LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LIBRARY_PATH}
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -38,6 +34,8 @@ RUN cmake -B build \
     -DGGML_RPC=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CUDA_ARCHITECTURES="${CMAKE_CUDA_ARCHITECTURES}" \
+    -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,/usr/local/cuda/lib64/stubs" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath-link,/usr/local/cuda/lib64/stubs" \
     && cmake --build build --config Release -j$(nproc) \
         --target llama-server rpc-server
 
