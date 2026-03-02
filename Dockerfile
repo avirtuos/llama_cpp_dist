@@ -25,7 +25,9 @@ RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
     libcurl4-openssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/local/cuda/lib64/stubs/libcuda.so \
+             /usr/local/cuda/lib64/stubs/libcuda.so.1
 
 WORKDIR /build
 RUN git clone --depth=1 https://github.com/ggml-org/llama.cpp .
