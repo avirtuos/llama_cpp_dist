@@ -47,8 +47,13 @@ RUN apt-get update && apt-get install -y \
     libcurl4 \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy binaries
 COPY --from=builder /build/build/bin/llama-server /usr/local/bin/llama-server
 COPY --from=builder /build/build/bin/rpc-server   /usr/local/bin/rpc-server
+
+# Copy all shared libraries produced by the build and register them
+COPY --from=builder /build/build/bin/*.so* /usr/local/lib/
+RUN ldconfig
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
