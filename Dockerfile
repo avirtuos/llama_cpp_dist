@@ -30,8 +30,6 @@ RUN cmake -B build \
     -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
     -DGGML_CUDA=ON \
     -DGGML_RPC=ON \
-    -DGGML_BACKEND_DL=ON \
-    -DGGML_CPU_ALL_VARIANTS=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CUDA_ARCHITECTURES="${CMAKE_CUDA_ARCHITECTURES}" \
     && cmake --build build --config Release -j$(nproc) \
