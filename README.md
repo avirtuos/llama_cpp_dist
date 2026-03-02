@@ -39,6 +39,8 @@ services:
     image: avirtuos/llama_cpp_dist:latest
     network_mode: host
     runtime: nvidia
+    volumes:
+      - /mnt/hf-cache:/root/.cache/llama.cpp
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - MODE=backend
@@ -57,7 +59,7 @@ services:
     network_mode: host
     runtime: nvidia
     volumes:
-      - /mnt/hf-cache:/root/.cache/huggingface
+      - /mnt/hf-cache:/root/.cache/llama.cpp
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - MODE=server
@@ -75,6 +77,8 @@ services:
 ```
 
 > **Note on HF_TOKEN**: `ggml-org/gpt-oss-120b-GGUF` is a gated model. Visit https://huggingface.co/ggml-org/gpt-oss-120b-GGUF, accept the license, then generate a token at https://huggingface.co/settings/tokens and set it above.
+
+> **Note on model cache**: llama.cpp's `-hf` flag downloads models to `/root/.cache/llama.cpp/` (not the HuggingFace Python cache at `/root/.cache/huggingface`). The volume mount above ensures downloaded models persist across container restarts.
 
 ## Environment Variables
 
