@@ -133,3 +133,7 @@ To enable automatic publishing to Docker Hub, configure the following secrets in
 | Push to `main` | `latest`, `sha-<short>` |
 | Push `v1.2.3` tag | `1.2.3`, `1.2`, `1`, `sha-<short>` |
 | Pull request to `main` | Build only — no push |
+
+## Change Log
+
+- 03132026 - Updating to latest llama.cpp
